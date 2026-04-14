@@ -68,6 +68,13 @@ class SettingsScreen extends StatelessWidget {
                   : null,
             ),
             const Divider(),
+            ListTile(
+              title: const Text('Tester les notifications'),
+              leading: const Icon(Icons.notifications_active),
+              onTap: () {
+                context.read<SettingsBloc>().notificationService.showTestNotification();
+              },
+            ),
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
