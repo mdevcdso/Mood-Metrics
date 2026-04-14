@@ -1,6 +1,7 @@
 import "package:flutter_local_notifications/flutter_local_notifications.dart";
 import 'package:timezone/timezone.dart';
 import 'package:timezone/data/latest.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class NotificationsService {
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
@@ -8,6 +9,10 @@ class NotificationsService {
   // init plugin avec configs iOS et Android
   Future<void> init() async {
     initializeTimeZones();
+
+    // récupère le fuseau horaire du téléphone
+    final timeZoneName = await FlutterTimezone.getLocalTimezone();
+    setLocalLocation(getLocation(timeZoneName));
 
     const androidSettings =
     AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -47,7 +52,7 @@ class NotificationsService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
@@ -67,5 +72,24 @@ class NotificationsService {
       scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;
+  }
+
+  // notif immédiate pour test
+  Future<void> showTestNotification() async {
+    await _plugin.show(
+      99,
+      'Mood & Metrics',
+      'Les notifications fonctionnent !',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_reminder',
+          'Rappel quotidien',
+          channelDescription: 'Notification de rappel quotidien',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+    );
   }
 }
