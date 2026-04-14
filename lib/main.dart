@@ -5,17 +5,25 @@ import 'package:mood_metrics/blocs/settings_bloc/settings_bloc.dart';
 import 'package:mood_metrics/repositories/settings_repository/settings_repository.dart';
 import 'package:mood_metrics/repositories/settings_repository/settings_data_source/local_settings_data_source.dart';
 import 'package:mood_metrics/screens/home_screen.dart';
+import 'package:mood_metrics/services/notifications_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  runApp(MyApp(prefs: prefs));
+  final notificationService = NotificationsService();
+  await notificationService.init();
+  runApp(MyApp(prefs: prefs, notificationService: notificationService));
 }
 
 class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
+  final NotificationsService notificationService;
 
-  const MyApp({super.key, required this.prefs});
+  const MyApp({
+    super.key,
+    required this.prefs,
+    required this.notificationService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +34,7 @@ class MyApp extends StatelessWidget {
             settingsRepository: SettingsRepository(
               dataSource: LocalSettingsDataSource(prefs: prefs),
             ),
+            notificationService: notificationService,
           )..add(LoadSettings()),
         ),
       ],
