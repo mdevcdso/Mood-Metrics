@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mood_metrics/blocs/journal_bloc/journal_bloc.dart';
 import 'package:mood_metrics/models/journal_entry.dart';
@@ -27,15 +28,34 @@ void addEntryDialog(BuildContext context) {
                     items: Mood.values.map((mood) {
                       return DropdownMenuItem(
                         value: mood,
-                        child: Text(mood.name),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(mood.value.toString()),
+                            Text(mood.label),
+                          ],
+                        ),
                       );
                     }).toList(),
+                    selectedItemBuilder: (context) => Mood.values
+                        .map((mood) => Text(mood.label))
+                        .toList(),
                     onChanged: (value) => setState(() => selectedMood = value!),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
                   TextField(
-                    decoration: const InputDecoration(labelText: 'Notes'),
+                    decoration: const InputDecoration(labelText: 'Notes (optionel)'),
                     onChanged: (value) => notes = value,
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(labelText: 'Poids (optionel)'),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      final intValue = int.tryParse(value);
+                    },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                   ),
                   const SizedBox(height: 16),
                   Align(
@@ -44,7 +64,7 @@ void addEntryDialog(BuildContext context) {
                       spacing: 8,
                       children: Tag.values.map((tag) {
                         return FilterChip(
-                          label: Text(tag.name),
+                          label: Text(tag.label),
                           selected: selectedTags.contains(tag),
                           onSelected: (selected) {
                             setState(() {

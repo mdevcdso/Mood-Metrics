@@ -34,7 +34,7 @@ class JournalEntryCardWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    entry.mood.name,
+                    entry.mood.label,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class JournalEntryCardWidget extends StatelessWidget {
                     label: Padding(
                       padding: const EdgeInsets.all(0),
                       child: Text(
-                        tag.name,
+                        tag.label,
                         style: const TextStyle(fontSize: 12),
                       ),
                     ),
