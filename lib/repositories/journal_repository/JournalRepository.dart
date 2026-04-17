@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:mood_metrics/models/journal_entry.dart';
 import 'journal_data_source/journal_data_source.dart';
 
@@ -17,7 +19,8 @@ final class JournalRepository {
   Future<JournalEntry?> getEntryByDate(DateTime date) async {
     try {
       return await dataSource.getEntryByDate(date);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log('Erreur GetEntry: $error', stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -25,7 +28,8 @@ final class JournalRepository {
   Future<void> addEntry(JournalEntry entry) async {
     try {
       await dataSource.addEntry(entry);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log('Erreur AddEntry: $error', stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -33,7 +37,8 @@ final class JournalRepository {
   Future<void> updateEntry(JournalEntry entry) async {
     try {
       await dataSource.updateEntry(entry);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log('Erreur UpdateEntry: $error', stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -41,7 +46,8 @@ final class JournalRepository {
   Future<void> deleteEntry(int id) async {
     try {
       await dataSource.deleteEntry(id);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log('Erreur DelEntry: $error', stackTrace: stackTrace);
       rethrow;
     }
   }

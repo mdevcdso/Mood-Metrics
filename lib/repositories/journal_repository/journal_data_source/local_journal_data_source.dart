@@ -21,7 +21,7 @@ final class LocalJournalDataSource extends JournalDataSource {
     final maps = await db.query('journal_entries', orderBy: 'date DESC');
     final entries = maps.map((m) => JournalEntry(
       id: m['id'] as int,
-      date: DateTime.parse(m['date'] as String),
+      date: DateFormat('dd/MM/yyyy').parse(m['date'] as String),
       mood: Mood.values[m['mood'] as int],
       weight: m['weight'] as double?,
       notes: m['notes'] as String,
@@ -46,7 +46,7 @@ final class LocalJournalDataSource extends JournalDataSource {
       'weight': entry.weight,
       'notes': entry.notes,
       'tags': entry.tags.map((t) => t.name).join(','),
-    });
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
     await _emitEntries();
   }
 
