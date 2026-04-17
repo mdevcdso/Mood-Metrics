@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:mood_metrics/blocs/journal_bloc/journal_bloc.dart';
 import 'package:mood_metrics/models/journal_entry.dart';
-import 'package:mood_metrics/widgets/AddEntryDialog.dart';
+import 'package:mood_metrics/widgets/AddEntryDialogWidget.dart';
+import 'package:mood_metrics/widgets/JournalEntryCardWidget.dart';
 
 import '../models/mood.dart';
 import '../models/tag.dart';
@@ -36,13 +38,14 @@ Widget _buildBody(JournalState state) {
   if (state.entries.isEmpty) {
     return const Center(child: Text('Aucune entrée de journal trouvée'));
   }
-  return ListView.builder(
+  return MasonryGridView.count(
+    crossAxisCount: 2,
+    mainAxisSpacing: 8,
+    crossAxisSpacing: 8,
     itemCount: state.entries.length,
     itemBuilder: (context, index) {
-      final entry = state.entries[index];
-      return ListTile(
-        title: Text(entry.mood.toString()),
-        subtitle: Text(entry.date.toLocal().toString()),
+      return JournalEntryCardWidget(
+        entry: state.entries[index],
       );
     },
   );

@@ -68,7 +68,7 @@ void addEntryDialog(BuildContext context) {
               ElevatedButton(
                 onPressed: () {
                   JournalEntry newEntry = JournalEntry(
-                    date: DateTime.now(),
+                    date: DateTime.now(), //.subtract(Duration(days: 8)),
                     mood: selectedMood,
                     notes: notes,
                     tags: selectedTags,
