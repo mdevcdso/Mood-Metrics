@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => JournalBloc(
             journalRepository: JournalRepository(
-              dataSource: LocalJournalDataSource(initialEntries: []),
+              dataSource: LocalJournalDataSource(),
             ),
           )..add(LoadJournalEntries()),
         ),
