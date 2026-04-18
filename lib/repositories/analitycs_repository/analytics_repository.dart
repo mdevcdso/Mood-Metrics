@@ -1,6 +1,7 @@
 
 
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:mood_metrics/models/analytics.dart';
 import 'package:mood_metrics/models/period.dart';
@@ -10,31 +11,25 @@ import 'analytics_data_source/analytics_data_source.dart';
 
 final class AnalyticsRepository {
   final AnalyticsDataSource dataSource;
-  late final StreamSubscription _subscription;
 
-  AnalyticsRepository({
-    required this.dataSource,
-    required JournalRepository journalRepository,
-  }) {
-    _subscription = journalRepository.watchEntries().listen((entries) {
-      getEntryAnalytics(Period.week);
-    });
-  }
+  AnalyticsRepository({required this.dataSource});
 
-  Stream<Analytics> watchAnalytics() {
+  Stream<Analytics> watchAnalytics() => dataSource.watchAnalytics();
+
+  Future<Analytics?> getEntryAnalytics(Period period) async {
     try {
-      return dataSource.watchAnalytics();
-    } catch (error) {
+      return await dataSource.getEntryAnalytics(period);
+    } catch (error, stackTrace) {
+      log('Erreur Get Analytics: $error', stackTrace: stackTrace);
       rethrow;
     }
   }
 
-  Future<void> getEntryAnalytics(Period period) async {
+  Future<void> updateEntryAnalytics(Period period) async {
     try {
-      await dataSource.getEntryAnalytics(period);
+      await dataSource.updateEntryAnalytics(period);
     } catch (error) {
       rethrow;
     }
   }
-
 }

@@ -5,5 +5,6 @@ import 'package:mood_metrics/models/period.dart';
 
 abstract class AnalyticsDataSource {
   Stream<Analytics> watchAnalytics();
-  Future<Map<String, dynamic>> getEntryAnalytics(Period period);
+  Future<Analytics> getEntryAnalytics(Period period);
+  Future<void> updateEntryAnalytics(Period period);
 }
