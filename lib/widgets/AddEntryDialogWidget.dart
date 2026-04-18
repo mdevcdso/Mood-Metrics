@@ -6,7 +6,7 @@ import 'package:mood_metrics/models/journal_entry.dart';
 import 'package:mood_metrics/models/mood.dart';
 import 'package:mood_metrics/models/tag.dart';
 
-void addEntryDialog(BuildContext context) {
+void addEntryDialog(BuildContext context, DateTime date) {
   showDialog(
     context: context,
     builder: (dialogContext) {
@@ -88,7 +88,7 @@ void addEntryDialog(BuildContext context) {
               ElevatedButton(
                 onPressed: () {
                   JournalEntry newEntry = JournalEntry(
-                    date: DateTime.now(), //.subtract(Duration(days: 8)),
+                    date: date, //.subtract(Duration(days: 8)),
                     mood: selectedMood,
                     notes: notes,
                     tags: selectedTags,

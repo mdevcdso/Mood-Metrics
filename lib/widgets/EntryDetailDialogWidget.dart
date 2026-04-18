@@ -7,6 +7,8 @@ import 'package:mood_metrics/models/journal_entry.dart';
 import 'package:mood_metrics/models/mood.dart';
 import 'package:mood_metrics/models/tag.dart';
 
+import 'AddEntryDialogWidget.dart';
+
 void entryDetailDialog(BuildContext context, JournalEntry entry) {
   showDialog(
     context: context,
@@ -99,11 +101,17 @@ void entryDetailDialog(BuildContext context, JournalEntry entry) {
             actions: [
               TextButton(
                 onPressed: () => {
+                  context.read<JournalBloc>().add(
+                    DeleteJournalEntry(entryId: entry.id!),
+                  ),
+                  Navigator.pop(dialogContext),
                 },
                 child: const Text('Supprimer'),
               ),
               ElevatedButton(
                 onPressed: () {
+                  Navigator.pop(dialogContext);
+                  addEntryDialog(context, entry.date);
                 },
                 child: const Text('Modifier'),
               ),

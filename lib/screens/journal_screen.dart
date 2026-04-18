@@ -19,7 +19,7 @@ class JournalScreen extends StatelessWidget {
         return Scaffold(
           body: _buildBody(state),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => addEntryDialog(context),
+            onPressed: () => addEntryDialog(context, DateTime.now()),
             child: const Icon(Icons.add),
           ),
         );
