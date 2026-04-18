@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:mood_metrics/models/analytics.dart';
+import 'package:mood_metrics/models/journal_entry.dart';
 import 'package:mood_metrics/models/period.dart';
 
 import '../journal_repository/JournalRepository.dart';
@@ -16,18 +17,18 @@ final class AnalyticsRepository {
 
   Stream<Analytics> watchAnalytics() => dataSource.watchAnalytics();
 
-  Future<Analytics?> getEntryAnalytics(Period period) async {
+  Future<Analytics?> getEntryAnalytics(Period period, List<JournalEntry> entries) async {
     try {
-      return await dataSource.getEntryAnalytics(period);
+      return await dataSource.getEntryAnalytics(period, entries);
     } catch (error, stackTrace) {
       log('Erreur Get Analytics: $error', stackTrace: stackTrace);
       rethrow;
     }
   }
 
-  Future<void> updateEntryAnalytics(Period period) async {
+  Future<void> updateEntryAnalytics(Period period, List<JournalEntry> entries) async {
     try {
-      await dataSource.updateEntryAnalytics(period);
+      await dataSource.updateEntryAnalytics(period, entries);
     } catch (error) {
       rethrow;
     }
