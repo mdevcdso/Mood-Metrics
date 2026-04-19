@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -14,8 +15,6 @@ part 'analytics_event.dart';
 
 part 'analytics_state.dart';
 
-
-
 class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   final JournalRepository journalRepository;
   final AnalyticsRepository analyticsRepository;
@@ -26,47 +25,55 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     required this.analyticsRepository,
   }) : super(AnalyticsState()) {
     on<LoadAnalytics>(_onLoadAnalytics);
-    on<UpdateAnalytics>(_onUpdatePeriodAnalytics);
+    on<UpdateAnalytics>(_onUpdateAnalytics);
 
     _journalSubscription = journalRepository.watchEntries().listen(
-          (entries) => add(UpdateAnalytics(period: Period.week, entries: entries)),
+        (entries) {
+          print("STREAM EMIT: ${entries.length}");
+          add(UpdateAnalytics(period: Period.week, entries: entries));
+        },
     );
   }
 
-  Future<void> _onLoadAnalytics(
-    LoadAnalytics event,
-    Emitter<AnalyticsState> emit,
-  ) async {
+  Future<void> _onLoadAnalytics(LoadAnalytics event,
+      Emitter<AnalyticsState> emit,) async {
     emit(state.copyWith(status: AnalyticsStatus.loading));
+
     try {
-      emit(state.copyWith(status: AnalyticsStatus.loading));
-      try {
-        final analytics = await analyticsRepository.getEntryAnalytics(event.period, event.entries);
-        if (analytics != null) {
-          emit(state.copyWith(status: AnalyticsStatus.loaded, analyse: analytics));
-        } else {
-          emit(state.copyWith(status: AnalyticsStatus.error));
-        }
-      } catch (error) {
+      final analytics = await analyticsRepository.getEntryAnalytics(
+        event.period,
+      );
+
+      if (analytics != null) {
+        emit(
+          state.copyWith(status: AnalyticsStatus.loaded, analyse: analytics),
+        );
+      } else {
         emit(state.copyWith(status: AnalyticsStatus.error));
       }
-    } catch (error) {
+    } catch (_) {
       emit(state.copyWith(status: AnalyticsStatus.error));
     }
   }
 
-  Future<void> _onUpdatePeriodAnalytics(
-    UpdateAnalytics event,
-    Emitter<AnalyticsState> emit,
-  ) async {
+  Future<void> _onUpdateAnalytics(UpdateAnalytics event,
+      Emitter<AnalyticsState> emit,) async {
+    print('_onUpdateAnalytics appelé');
+    print('_onUpdateAnalytics appelé avec ${event.entries.length} entrées');
     try {
-      await analyticsRepository.updateEntryAnalytics(event.period, event.entries);
+      final analytics = await analyticsRepository.updateEntryAnalytics(
+        event.period,
+        event.entries,
+      );
+      emit(state.copyWith(status: AnalyticsStatus.loaded, analyse: analytics));
     } catch (error) {
       emit(state.copyWith(status: AnalyticsStatus.error));
     }
   }
 
-
-
-
+  @override
+  Future<void> close() {
+    _journalSubscription?.cancel();
+    return super.close();
+  }
 }

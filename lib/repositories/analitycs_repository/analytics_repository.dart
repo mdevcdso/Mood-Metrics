@@ -12,13 +12,22 @@ import 'analytics_data_source/analytics_data_source.dart';
 
 final class AnalyticsRepository {
   final AnalyticsDataSource dataSource;
+  final JournalRepository journalRepository;
 
-  AnalyticsRepository({required this.dataSource});
+  AnalyticsRepository({
+    required this.dataSource,
+    required this.journalRepository,
+  });
 
-  Stream<Analytics> watchAnalytics() => dataSource.watchAnalytics();
+  Stream<Analytics> watchAnalytics() {
+    return journalRepository.watchEntries().asyncMap(
+          (entries) => dataSource.getEntryAnalytics(Period.week, entries),
+    );
+  }
 
-  Future<Analytics?> getEntryAnalytics(Period period, List<JournalEntry> entries) async {
+  Future<Analytics?> getEntryAnalytics(Period period) async {
     try {
+      final entries = await journalRepository.watchEntries().first;
       return await dataSource.getEntryAnalytics(period, entries);
     } catch (error, stackTrace) {
       log('Erreur Get Analytics: $error', stackTrace: stackTrace);
@@ -26,10 +35,12 @@ final class AnalyticsRepository {
     }
   }
 
-  Future<void> updateEntryAnalytics(Period period, List<JournalEntry> entries) async {
+  Future<Analytics> updateEntryAnalytics(Period period, List<JournalEntry> entries) async {
     try {
-      await dataSource.updateEntryAnalytics(period, entries);
-    } catch (error) {
+      log('nouvele analyse: ${entries.length} entries');
+      return await dataSource.getEntryAnalytics(period, entries);
+    } catch (error, stackTrace) {
+      log('Erreur update Analytics: $error', stackTrace: stackTrace);
       rethrow;
     }
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mood_metrics/blocs/analytics_bloc/analytics_bloc.dart';
 import 'package:mood_metrics/blocs/journal_bloc/journal_bloc.dart';
+import 'package:mood_metrics/repositories/analitycs_repository/analytics_data_source/local_analytics_data_source.dart';
+import 'package:mood_metrics/repositories/analitycs_repository/analytics_repository.dart';
 import 'package:mood_metrics/repositories/journal_repository/JournalRepository.dart';
 import 'package:mood_metrics/repositories/journal_repository/journal_data_source/local_journal_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,6 +50,17 @@ class MyApp extends StatelessWidget {
             ),
           )..add(LoadJournalEntries()),
         ),
+        BlocProvider(create: (context) => AnalyticsBloc(
+              journalRepository: JournalRepository(
+                dataSource: LocalJournalDataSource(),
+              ),
+              analyticsRepository: AnalyticsRepository(
+                dataSource: LocalAnalyticsDataSource(),
+                journalRepository: JournalRepository(
+                  dataSource: LocalJournalDataSource(),
+                ),
+              ),
+        ))
       ],
       child: BlocBuilder<SettingsBloc, SettingsState>(
         buildWhen: (previous, current) =>

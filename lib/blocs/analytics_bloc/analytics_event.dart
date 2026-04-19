@@ -5,11 +5,11 @@ sealed class AnalyticsEvent {}
 
 final class LoadAnalytics extends AnalyticsEvent {
   final Period period;
-  final List<JournalEntry> entries;
+  //final List<JournalEntry> entries;
 
   LoadAnalytics({
     required this.period,
-    required this.entries
+    //required this.entries
   });
 
 }
