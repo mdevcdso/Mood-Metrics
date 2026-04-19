@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:mood_metrics/models/journal_entry.dart';
+import 'package:mood_metrics/models/period.dart';
 import 'journal_data_source/journal_data_source.dart';
 
 final class JournalRepository {
@@ -12,15 +13,6 @@ final class JournalRepository {
     try {
       return dataSource.watchEntries();
     } catch (error) {
-      rethrow;
-    }
-  }
-
-  Future<JournalEntry?> getEntryByDate(DateTime date) async {
-    try {
-      return await dataSource.getEntryByDate(date);
-    } catch (error, stackTrace) {
-      log('Erreur GetEntry: $error', stackTrace: stackTrace);
       rethrow;
     }
   }

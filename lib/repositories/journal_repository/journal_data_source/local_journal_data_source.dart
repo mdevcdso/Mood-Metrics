@@ -79,11 +79,6 @@ final class LocalJournalDataSource extends JournalDataSource {
       where: 'id = ?',
       whereArgs: [entry.id],
     );
-  }
-
-  @override
-  Future<JournalEntry?> getEntryByDate(DateTime date) {
-    // TODO: implement getEntryByDate
-    throw UnimplementedError();
+    await _emitEntries();
   }
 }
