@@ -13,6 +13,8 @@ import '../models/tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../widgets/AnalyticsPiechartWidget.dart';
+
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
 
@@ -24,43 +26,17 @@ class AnalyticsScreen extends StatelessWidget {
           if (state.status == AnalyticsStatus.loading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (state.status == AnalyticsStatus.error) {
             return const Center(child: Text('Erreur de chargement'));
           }
 
           final analytics = state.analyse;
-          final entries = state.analyse.moodDistribution.entries.toList();
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _StatCard(
-                        title: "Mood moyen",
-                        value: analytics.averageMood.toStringAsFixed(1),
-                        icon: Icons.emoji_emotions,
-                        color: Colors.green,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatCard(
-                        title: "Poids moyen",
-                        value:
-                            analytics.averageWeight?.toStringAsFixed(1) ?? "-",
-                        icon: Icons.monitor_weight,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
+                Row()
                 SizedBox(
                   width: double.infinity,
                   child: _EntryCard(
@@ -69,7 +45,6 @@ class AnalyticsScreen extends StatelessWidget {
                     color: Colors.green,
                   ),
                 ),
-
                 const SizedBox(width: 12),
                 SizedBox(
                   width: double.infinity,
@@ -79,8 +54,20 @@ class AnalyticsScreen extends StatelessWidget {
                     color: Colors.red,
                   ),
                 ),
-
                 const SizedBox(height: 16),
+                AppPieChart<Mood>(
+                  data: analytics.moodDistribution,
+                  title: "Répartition des Moods",
+                  getLabel: (mood) => mood.label,
+                  getIndex: (mood) => mood.index,
+                ),
+                const SizedBox(height: 16),
+                AppPieChart<Tag>(
+                  data: analytics.tagFrequency,
+                  title: "Répartition des Tags",
+                  getLabel: (tag) => tag.label,
+                  getIndex: (tag) => tag.index,
+                ),
               ],
             ),
           );
