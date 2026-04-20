@@ -33,6 +33,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final journalRepository = JournalRepository(
+      dataSource: LocalJournalDataSource(),
+    );
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -45,20 +49,14 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => JournalBloc(
-            journalRepository: JournalRepository(
-              dataSource: LocalJournalDataSource(),
-            ),
+            journalRepository: journalRepository
           )..add(LoadJournalEntries()),
         ),
         BlocProvider(create: (context) => AnalyticsBloc(
-              journalRepository: JournalRepository(
-                dataSource: LocalJournalDataSource(),
-              ),
+              journalRepository: journalRepository,
               analyticsRepository: AnalyticsRepository(
                 dataSource: LocalAnalyticsDataSource(),
-                journalRepository: JournalRepository(
-                  dataSource: LocalJournalDataSource(),
-                ),
+                journalRepository: journalRepository
               ),
         ))
       ],

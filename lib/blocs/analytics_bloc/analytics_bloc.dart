@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 import 'package:mood_metrics/models/analytics.dart';
 import 'package:mood_metrics/repositories/analitycs_repository/analytics_repository.dart';
@@ -29,7 +30,6 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
 
     _journalSubscription = journalRepository.watchEntries().listen(
         (entries) {
-          print("STREAM EMIT: ${entries.length}");
           add(UpdateAnalytics(period: Period.week, entries: entries));
         },
     );
@@ -56,10 +56,7 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     }
   }
 
-  Future<void> _onUpdateAnalytics(UpdateAnalytics event,
-      Emitter<AnalyticsState> emit,) async {
-    print('_onUpdateAnalytics appelé');
-    print('_onUpdateAnalytics appelé avec ${event.entries.length} entrées');
+  Future<void> _onUpdateAnalytics(UpdateAnalytics event, Emitter<AnalyticsState> emit,) async {
     try {
       final analytics = await analyticsRepository.updateEntryAnalytics(
         event.period,
