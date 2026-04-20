@@ -1,13 +1,8 @@
-
 import 'dart:async';
-import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:mood_metrics/models/analytics.dart';
 import 'package:mood_metrics/models/tag.dart';
-import 'package:sqflite/sqflite.dart';
 
-import '../../../database/database_helper.dart';
 import '../../../models/journal_entry.dart';
 import '../../../models/mood.dart';
 import '../../../models/period.dart';
@@ -16,67 +11,65 @@ import 'analytics_data_source.dart';
 final class LocalAnalyticsDataSource implements AnalyticsDataSource {
   final _controller = StreamController<Analytics>.broadcast();
 
-
   @override
   Stream<Analytics> watchAnalytics() {
     return _controller.stream;
   }
 
   @override
-  Future<Analytics> getEntryAnalytics(Period period, List<JournalEntry> entries) async {
+  Future<Analytics> getEntryAnalytics(
+    Period period,
+    List<JournalEntry> entries,
+  ) async {
     double totalMood = 0;
     int moodCount = 0;
-    final Map<Mood, int> moodDistribution = {};
-    final Map<Tag, int> tagFrequency = {};
-    double totalWeight = 0;
-    int weightCount = 0;
     JournalEntry? bestDay;
     JournalEntry? worstDay;
+    final Map<Tag, double> tagAverageMood = {};
+    final Map<Mood, int> moodDistribution = {};
+    final Map<Tag, int> tagFrequency = {};
 
-    final now = DateTime.now();
-    final limitDate = now.subtract(Duration(days: period.value));
+    final limitDate = DateTime.now().subtract(Duration(days: period.value));
+    final Map<Tag, List<int>> tagMoodScores = {};
 
     final filteredEntries = entries.where((entry) {
       return entry.date.isAfter(limitDate);
     }).toList();
+
     for (JournalEntry entry in filteredEntries) {
       totalMood += entry.mood.value;
       moodCount++;
 
-      moodDistribution[entry.mood] =
-          (moodDistribution[entry.mood] ?? 0) + 1;
+      moodDistribution[entry.mood] = (moodDistribution[entry.mood] ?? 0) + 1;
 
       for (final tag in entry.tags) {
         tagFrequency[tag] = (tagFrequency[tag] ?? 0) + 1;
-      }
 
-      if (entry.weight != null) {
-        totalWeight += entry.weight!;
-        weightCount++;
+        tagMoodScores.putIfAbsent(tag, () => []);
+        tagMoodScores[tag]!.add(entry.mood.value);
       }
-      if (bestDay == null ||
-          entry.mood.value > bestDay.mood.value) {
+      if (bestDay == null || entry.mood.value > bestDay.mood.value) {
         bestDay = entry;
       }
-      if (worstDay == null ||
-          entry.mood.value < worstDay.mood.value) {
+      if (worstDay == null || entry.mood.value < worstDay.mood.value) {
         worstDay = entry;
       }
     }
 
-    final averageMood =
-    moodCount > 0 ? totalMood / moodCount : 0;
+    for (final entry in tagMoodScores.entries) {
+      final avg = entry.value.reduce((a, b) => a + b) / entry.value.length;
+      tagAverageMood[entry.key] = avg;
+    }
 
-    final averageWeight =
-    weightCount > 0 ? totalWeight / weightCount : null;
+    final averageMood = moodCount > 0 ? totalMood / moodCount : 0;
 
     final analytics = Analytics(
       averageMood: averageMood,
       moodDistribution: moodDistribution,
       tagFrequency: tagFrequency,
-      averageWeight: averageWeight,
       bestDay: bestDay,
       worstDay: worstDay,
+      tagAverageMood: tagAverageMood,
     );
 
     _controller.add(analytics);
@@ -85,8 +78,10 @@ final class LocalAnalyticsDataSource implements AnalyticsDataSource {
   }
 
   @override
-  Future<void> updateEntryAnalytics(Period period, List<JournalEntry> entries) async {
+  Future<void> updateEntryAnalytics(
+    Period period,
+    List<JournalEntry> entries,
+  ) async {
     //await _emitAnalytics(period, entries);
   }
-
 }

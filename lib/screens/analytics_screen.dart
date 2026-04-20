@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/AnalyticsPiechartWidget.dart';
+import '../widgets/MoodByTagCahrtWidget.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
@@ -73,6 +74,11 @@ class AnalyticsScreen extends StatelessWidget {
                   }).toList(),
                 ),
                 const SizedBox(height: 16),
+                TagMoodBarChart(
+                  data: analytics.tagAverageMood,
+                  averageMood: analytics.averageMood.toStringAsFixed(1),
+                ),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: _EntryCard(
@@ -96,14 +102,7 @@ class AnalyticsScreen extends StatelessWidget {
                   title: "Répartition des Moods",
                   getLabel: (mood) => mood.label,
                   getIndex: (mood) => mood.index,
-                ),
-                const SizedBox(height: 16),
-                AppPieChart<Tag>(
-                  data: analytics.tagFrequency,
-                  title: "Répartition des Tags",
-                  getLabel: (tag) => tag.label,
-                  getIndex: (tag) => tag.index,
-                ),
+                )
               ],
             ),
           );
@@ -113,41 +112,7 @@ class AnalyticsScreen extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
 
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 32),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(title, style: const TextStyle(color: Colors.grey)),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _EntryCard extends StatelessWidget {
   final String title;

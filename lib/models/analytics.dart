@@ -14,6 +14,8 @@ final class Analytics {
   final double? averageWeight;
   final JournalEntry? bestDay;
   final JournalEntry? worstDay;
+  final Map<Tag, double> tagAverageMood;
+
 
   const Analytics({
     required this.averageMood,
@@ -22,5 +24,6 @@ final class Analytics {
     required this.tagFrequency,
     this.bestDay,
     this.worstDay,
+    required this.tagAverageMood,
   });
 }

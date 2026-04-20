@@ -14,6 +14,7 @@ final class AnalyticsState {
       averageMood: 0,
       moodDistribution: {},
       tagFrequency: {},
+      tagAverageMood: {},
     ),
   });
 
