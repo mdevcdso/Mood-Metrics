@@ -15,11 +15,11 @@ final class LoadAnalytics extends AnalyticsEvent {
 }
 
 final class UpdateAnalytics extends AnalyticsEvent {
-  final Period period;
+  //final Period period;
   final List<JournalEntry> entries;
 
   UpdateAnalytics({
-    required this.period,
+    //required this.period,
     required this.entries
 });
 }

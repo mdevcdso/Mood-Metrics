@@ -25,9 +25,8 @@ final class AnalyticsRepository {
     );
   }
 
-  Future<Analytics?> getEntryAnalytics(Period period) async {
+  Future<Analytics?> getEntryAnalytics(Period period, List<JournalEntry> entries) async {
     try {
-      final entries = await journalRepository.watchEntries().first;
       return await dataSource.getEntryAnalytics(period, entries);
     } catch (error, stackTrace) {
       log('Erreur Get Analytics: $error', stackTrace: stackTrace);

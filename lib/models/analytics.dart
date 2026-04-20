@@ -2,6 +2,7 @@
 
 import 'package:mood_metrics/blocs/journal_bloc/journal_bloc.dart';
 import 'package:mood_metrics/models/journal_entry.dart';
+import 'package:mood_metrics/models/period.dart';
 import 'package:mood_metrics/models/tag.dart';
 
 import 'mood.dart';

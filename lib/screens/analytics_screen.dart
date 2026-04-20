@@ -26,32 +26,68 @@ class AnalyticsScreen extends StatelessWidget {
           if (state.status == AnalyticsStatus.loading) {
             return const Center(child: CircularProgressIndicator());
           }
+
           if (state.status == AnalyticsStatus.error) {
             return const Center(child: Text('Erreur de chargement'));
           }
 
           final analytics = state.analyse;
+          final selected = state.period;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(8),
             child: Column(
               children: [
-                Row()
+                Row(
+                  children: Period.values.map((period) {
+                    final isSelected = period == selected;
+
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          context.read<AnalyticsBloc>().add(
+                            LoadAnalytics(period: period),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.grey
+                                : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              period.label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? Colors.white : Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: _EntryCard(
                     title: "Meilleur jour",
                     entry: analytics.bestDay,
-                    color: Colors.green,
+                    color: Colors.grey,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: _EntryCard(
                     title: "Pire jour",
                     entry: analytics.worstDay,
-                    color: Colors.red,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 16),

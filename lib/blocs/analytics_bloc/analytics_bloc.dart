@@ -17,6 +17,8 @@ part 'analytics_event.dart';
 part 'analytics_state.dart';
 
 class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
+  late List<JournalEntry> _currentEntries;
+
   final JournalRepository journalRepository;
   final AnalyticsRepository analyticsRepository;
   StreamSubscription<List<JournalEntry>>? _journalSubscription;
@@ -27,42 +29,56 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   }) : super(AnalyticsState()) {
     on<LoadAnalytics>(_onLoadAnalytics);
     on<UpdateAnalytics>(_onUpdateAnalytics);
+    _currentEntries = [];
 
-    _journalSubscription = journalRepository.watchEntries().listen(
-        (entries) {
-          add(UpdateAnalytics(period: Period.week, entries: entries));
-        },
-    );
+    _journalSubscription =
+        journalRepository.watchEntries().listen((entries) {
+          _currentEntries = entries;
+
+          add(UpdateAnalytics(
+            entries: entries,
+          ));
+        });
   }
 
-  Future<void> _onLoadAnalytics(LoadAnalytics event,
-      Emitter<AnalyticsState> emit,) async {
+  Future<void> _onLoadAnalytics(
+      LoadAnalytics event,
+      Emitter<AnalyticsState> emit,
+      ) async {
     emit(state.copyWith(status: AnalyticsStatus.loading));
 
     try {
       final analytics = await analyticsRepository.getEntryAnalytics(
         event.period,
+        _currentEntries,
       );
 
-      if (analytics != null) {
-        emit(
-          state.copyWith(status: AnalyticsStatus.loaded, analyse: analytics),
-        );
-      } else {
-        emit(state.copyWith(status: AnalyticsStatus.error));
-      }
+      emit(state.copyWith(
+        status: AnalyticsStatus.loaded,
+        analyse: analytics,
+        period: event.period,
+      ));
     } catch (_) {
       emit(state.copyWith(status: AnalyticsStatus.error));
     }
   }
 
-  Future<void> _onUpdateAnalytics(UpdateAnalytics event, Emitter<AnalyticsState> emit,) async {
+  Future<void> _onUpdateAnalytics(
+    UpdateAnalytics event,
+    Emitter<AnalyticsState> emit,
+  ) async {
     try {
       final analytics = await analyticsRepository.updateEntryAnalytics(
-        event.period,
+        state.period,
         event.entries,
       );
-      emit(state.copyWith(status: AnalyticsStatus.loaded, analyse: analytics));
+      emit(
+        state.copyWith(
+          status: AnalyticsStatus.loaded,
+          analyse: analytics,
+          period: state.period,
+        ),
+      );
     } catch (error) {
       emit(state.copyWith(status: AnalyticsStatus.error));
     }

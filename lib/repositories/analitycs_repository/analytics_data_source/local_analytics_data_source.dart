@@ -17,8 +17,6 @@ final class LocalAnalyticsDataSource implements AnalyticsDataSource {
   final _controller = StreamController<Analytics>.broadcast();
 
 
-
-
   @override
   Stream<Analytics> watchAnalytics() {
     return _controller.stream;
@@ -35,7 +33,13 @@ final class LocalAnalyticsDataSource implements AnalyticsDataSource {
     JournalEntry? bestDay;
     JournalEntry? worstDay;
 
-    for (JournalEntry entry in entries) {
+    final now = DateTime.now();
+    final limitDate = now.subtract(Duration(days: period.value));
+
+    final filteredEntries = entries.where((entry) {
+      return entry.date.isAfter(limitDate);
+    }).toList();
+    for (JournalEntry entry in filteredEntries) {
       totalMood += entry.mood.value;
       moodCount++;
 
@@ -50,12 +54,10 @@ final class LocalAnalyticsDataSource implements AnalyticsDataSource {
         totalWeight += entry.weight!;
         weightCount++;
       }
-
       if (bestDay == null ||
           entry.mood.value > bestDay.mood.value) {
         bestDay = entry;
       }
-
       if (worstDay == null ||
           entry.mood.value < worstDay.mood.value) {
         worstDay = entry;
