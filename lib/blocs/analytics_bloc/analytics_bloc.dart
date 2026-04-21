@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +7,6 @@ import 'package:mood_metrics/models/analytics.dart';
 import 'package:mood_metrics/repositories/analitycs_repository/analytics_repository.dart';
 
 import '../../models/journal_entry.dart';
-import '../../models/mood.dart';
 import '../../models/period.dart';
 import '../../repositories/journal_repository/JournalRepository.dart';
 
