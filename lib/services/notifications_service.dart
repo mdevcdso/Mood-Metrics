@@ -6,11 +6,9 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 class NotificationsService {
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
-  // init plugin avec configs iOS et Android
   Future<void> init() async {
     initializeTimeZones();
 
-    // récupère le fuseau horaire du téléphone
     final timeZoneName = await FlutterTimezone.getLocalTimezone();
     setLocalLocation(getLocation(timeZoneName));
 
@@ -35,7 +33,6 @@ class NotificationsService {
     await android?.requestNotificationsPermission();
   }
 
-  // programmation d'une notif quotidienne selon heure choisie
   Future<void> scheduleDailyReminder(int hour, int minute) async {
     await _plugin.zonedSchedule(
       0,
@@ -58,12 +55,10 @@ class NotificationsService {
     );
   }
 
-  // reset toutes les notifs programmées
   Future<void> cancelAllNotifs() async {
     await _plugin.cancelAll();
   }
 
-  // calcule le prochain moment où il sera l'heure choisie
   TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = TZDateTime.now(local);
     var scheduled = TZDateTime(local, now.year, now.month, now.day,
@@ -74,7 +69,6 @@ class NotificationsService {
     return scheduled;
   }
 
-  // notif immédiate pour test
   Future<void> showTestNotification() async {
     await _plugin.show(
       99,
